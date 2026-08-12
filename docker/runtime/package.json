@@ -1,0 +1,14 @@
+{
+  "name": "ideon-runtime-dependencies",
+  "private": true,
+  "dependencies": {
+    "kysely": "0.29.4",
+    "nanoid": "5.1.16",
+    "node-pty": "1.1.0",
+    "y-leveldb": "0.2.0"
+  },
+  "allowScripts": {
+    "classic-level@1.4.1": true,
+    "node-pty@1.1.0": true
+  }
+}

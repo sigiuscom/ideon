@@ -10,7 +10,6 @@ import type {
   KanbanTask,
   KanbanMetadata,
   KanbanField,
-  KanbanColumn,
 } from "./kanban";
 import { NotFoundError, ValidationError } from "../errors";
 
@@ -436,16 +435,6 @@ describe("Property: Link create-then-delete round trip", () => {
             linkedTasks: [],
           };
 
-          const metadata: KanbanMetadata = {
-            columns: [
-              {
-                id: "c-1",
-                title: "Column",
-                tasks: [sourceTask, targetTask],
-              },
-            ],
-          };
-
           // ── CREATE link (same logic as link_kanban_tasks create action) ──
           sourceTask.linkedTasks!.push({
             taskId: targetTaskId,
@@ -627,16 +616,6 @@ describe("Property: Reciprocal link invariant", () => {
             linkedTasks: [],
           };
 
-          const metadata: KanbanMetadata = {
-            columns: [
-              {
-                id: "c-col1",
-                title: "Column 1",
-                tasks: [sourceTask, targetTask],
-              },
-            ],
-          };
-
           // Simulate link_kanban_tasks create action logic:
           // 1. Add link to source task
           sourceTask.linkedTasks!.push({
@@ -741,7 +720,7 @@ describe("Property: Enhanced create stores all provided enrichment", () => {
         // Generate a fields record with both valid and invalid (unknown) field IDs
         fc
           .array(fieldDefArb, { minLength: 1, maxLength: 4 })
-          .chain((boardFields) => {
+          .chain(() => {
             // We need to use the actual boardFields from the first arb, but chain doesn't share state.
             // Instead, generate a set of key-value pairs with some keys matching known prefixes and some random.
             return fc.dictionary(

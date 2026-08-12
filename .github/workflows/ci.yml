@@ -32,10 +32,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "24"
           cache: "npm"
@@ -75,7 +75,7 @@ jobs:
       ENV_FILE: .env.ci
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Setup CI Environment
         run: |
@@ -89,7 +89,7 @@ jobs:
           # 1. Switch from pre-built image to local build
           # 2. Remove fixed container names to avoid conflicts
           # 3. Suffix volumes with run ID to ensure fresh data for each run
-          sed -e "s|image: ghcr.io/3xpyth0n/ideon:latest|build: .|g" \
+          sed -e "s|image: ghcr.io/sigiuscom/ideon:latest|build: .|g" \
               -e '/container_name:/d' \
               -e "s/ideon-app-data/ideon-app-data-${{ github.run_id }}/g" \
               -e "s/ideon-db-data/ideon-db-data-${{ github.run_id }}/g" \
@@ -101,7 +101,7 @@ jobs:
       - name: Validate application health
         run: |
           PORT=${APP_PORT:-3000}
-          HEALTH=$(curl -sf http://localhost:${PORT}/api/health)
+          HEALTH=$(curl -sf "http://localhost:${PORT}/api/health")
           echo "Health response: $HEALTH"
           echo "$HEALTH" | grep -q '"status":"ok"' || (echo "Health check failed" && exit 1)
 
@@ -128,27 +128,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: "24"
 
       - name: Validate i18n files synchronization
-        run: npm exec --yes --package=tsx -- tsx src/app/i18n/validate.ts
+        run: npm exec --yes --package=tsx@4.23.1 -- tsx src/app/i18n/validate.ts
 
   secret-scan:
     name: Secret scanning
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
       - name: Run TruffleHog
-        uses: trufflesecurity/trufflehog@v3.92.5
+        uses: trufflesecurity/trufflehog@116e7171542d2f1dad8810f00dcfacbe0b809183 # v3.92.5
         with:
           path: ./
           base: ${{ github.event_name == 'push' && github.event.before || (github.event_name == 'pull_request' && github.event.pull_request.base.sha || '') }}
