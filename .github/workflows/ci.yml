@@ -98,7 +98,8 @@ jobs:
               docker-compose.yml > docker-compose.ci.yml
 
       - name: Install Docker Compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose-v2
+        run: sudo curl -fsSL https://github.com/docker/compose/releases/download/v2.39.1/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+          sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
       - name: Start Stack (Production Simulation)
         run: docker compose -f docker-compose.ci.yml up -d --build --wait
 
