@@ -97,6 +97,8 @@ jobs:
               -e "s/ideon-db-data/ideon-db-data-${{ github.run_id }}/g" \
               docker-compose.yml > docker-compose.ci.yml
 
+      - name: Install Docker Compose
+        run: sudo apt-get update && sudo apt-get install -y docker-compose-plugin
       - name: Start Stack (Production Simulation)
         run: docker compose -f docker-compose.ci.yml up -d --build --wait
 
