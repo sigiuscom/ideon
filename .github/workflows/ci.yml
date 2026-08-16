@@ -22,7 +22,7 @@ on:
 jobs:
   validate:
     name: Build and Validate
-    runs-on: ubuntu-latest
+    runs-on: aks-untrusted
     env:
       NODE_ENV: test
       IS_NEXT_BUILD: "1"
@@ -40,6 +40,8 @@ jobs:
           node-version: "24"
           cache: "npm"
 
+      - name: Install native build tools
+        run: sudo apt-get update && sudo apt-get install -y build-essential
       - name: Install dependencies
         run: npm ci
 
@@ -61,7 +63,7 @@ jobs:
 
   docker-validate:
     name: Docker Validation
-    runs-on: ubuntu-latest
+    runs-on: aks-untrusted-dind-dind
     env:
       IS_NEXT_BUILD: "1"
       DB_USER: ci_user
@@ -95,6 +97,9 @@ jobs:
               -e "s/ideon-db-data/ideon-db-data-${{ github.run_id }}/g" \
               docker-compose.yml > docker-compose.ci.yml
 
+      - name: Install Docker Compose
+        run: sudo curl -fsSL https://github.com/docker/compose/releases/download/v2.39.1/docker-compose-linux-x86_64 -o /usr/local/lib/docker/cli-plugins/docker-compose
+          sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
       - name: Start Stack (Production Simulation)
         run: docker compose -f docker-compose.ci.yml up -d --build --wait
 
@@ -125,7 +130,7 @@ jobs:
 
   i18n-sync-check:
     name: i18n Synchronization Check
-    runs-on: ubuntu-latest
+    runs-on: aks-untrusted
     steps:
       - name: Check out repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -140,7 +145,7 @@ jobs:
 
   secret-scan:
     name: Secret scanning
-    runs-on: ubuntu-latest
+    runs-on: aks-untrusted-dind
     steps:
       - name: Check out repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
