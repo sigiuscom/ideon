@@ -63,7 +63,7 @@ jobs:
 
   docker-validate:
     name: Docker Validation
-    runs-on: aks-untrusted-dind
+    runs-on: aks-untrusted-dind-dind
     env:
       IS_NEXT_BUILD: "1"
       DB_USER: ci_user
@@ -98,7 +98,7 @@ jobs:
               docker-compose.yml > docker-compose.ci.yml
 
       - name: Install Docker Compose
-        run: sudo apt-get update && sudo apt-get install -y docker-compose-plugin
+        run: sudo apt-get update && sudo apt-get install -y docker-compose-v2
       - name: Start Stack (Production Simulation)
         run: docker compose -f docker-compose.ci.yml up -d --build --wait
 
@@ -144,7 +144,7 @@ jobs:
 
   secret-scan:
     name: Secret scanning
-    runs-on: aks-untrusted
+    runs-on: aks-untrusted-dind
     steps:
       - name: Check out repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
