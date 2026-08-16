@@ -12,7 +12,7 @@ permissions:
 jobs:
   release:
     name: Create GitHub Release
-    runs-on: ubuntu-latest
+    runs-on: aks-self-hosted
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
