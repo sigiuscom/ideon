@@ -1,13 +1,9 @@
-FROM node:24-alpine@sha256:d32cdf619f63fe0471182d08996dd516c6275bb5fd31ae06e55a570bd9e1ad43 AS base
+FROM node:24-slim AS base
 WORKDIR /app
 
 # 1. Install dependencies and build app
 FROM base AS builder
-RUN apk add --no-cache \
-    python3=3.14.5-r0 \
-    make=4.4.1-r4 \
-    g++=15.2.0-r5 \
-    ca-certificates=20260611-r0
+RUN apt-get update && apt-get install -y --no-install-recommends python3 build-essential ca-certificates curl && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
 COPY . .
@@ -18,22 +14,16 @@ RUN rm -rf .next/cache
 
 # 2. Install only the packages nft misses
 FROM base AS server-runtime
-RUN apk add --no-cache \
-    python3=3.14.5-r0 \
-    make=4.4.1-r4 \
-    g++=15.2.0-r5 \
-    ca-certificates=20260611-r0
-COPY docker/runtime/package.json docker/runtime/package-lock.json ./
-RUN npm ci --no-audit --no-fund
+RUN apt-get update && apt-get install -y --no-install-recommends python3 build-essential ca-certificates curl && rm -rf /var/lib/apt/lists/*
+COPY package-lock.json ./
+RUN echo '{"name":"runtime","private":true,"dependencies":{"y-leveldb":"*","kysely":"*","nanoid":"*","node-pty":"*"}}' > package.json \
+    && npm install --no-audit --no-fund
 
 # 3. Production image
 FROM base AS runner
 ENV NODE_ENV=production
-RUN apk add --no-cache tini=0.19.0-r3 shadow=4.18.0-r1 \
-    && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
-    && rm -f /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack
-RUN addgroup -g 1001 appuser \
-    && adduser -D -u 1001 -G appuser appuser \
+RUN apt-get update && apt-get install -y --no-install-recommends tini curl && rm -rf /var/lib/apt/lists/*
+RUN useradd -u 1001 -m appuser \
     && mkdir -p /app/storage/avatars /app/storage/yjs /app/storage/uploads \
     && mkdir -p /app/.next/cache \
     && chown -R appuser:appuser /app/storage /app/.next/cache
