@@ -63,7 +63,7 @@ jobs:
 
   docker-validate:
     name: Docker Validation
-    runs-on: aks-untrusted-dind-dind
+    runs-on: aks-untrusted-dind
     env:
       IS_NEXT_BUILD: "1"
       DB_USER: ci_user
