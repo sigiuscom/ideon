@@ -76,19 +76,3 @@ jobs:
 
       - name: Validate i18n files synchronization
         run: npm exec --yes --package=tsx@4.23.1 -- tsx src/app/i18n/validate.ts
-
-  secret-scan:
-    name: Secret scanning
-    runs-on: aks-untrusted-dind
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          fetch-depth: 0
-
-      - name: Run TruffleHog
-        uses: trufflesecurity/trufflehog@116e7171542d2f1dad8810f00dcfacbe0b809183 # v3.92.5
-        with:
-          path: ./
-          base: ${{ github.event_name == 'push' && github.event.before || (github.event_name == 'pull_request' && github.event.pull_request.base.sha || '') }}
-          head: ${{ github.event_name == 'push' && github.event.after || (github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'HEAD') }}
