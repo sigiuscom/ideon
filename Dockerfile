@@ -17,7 +17,8 @@ FROM base AS server-runtime
 RUN apt-get update && apt-get install -y --no-install-recommends python3 build-essential ca-certificates curl && rm -rf /var/lib/apt/lists/*
 COPY package-lock.json ./
 RUN echo '{"name":"runtime","private":true,"dependencies":{"y-leveldb":"*","kysely":"*","nanoid":"*","node-pty":"*"}}' > package.json \
-    && npm install --no-audit --no-fund
+    && npm install --no-audit --no-fund \
+    && tar -C /app -czf /tmp/server-runtime.tgz package.json package-lock.json node_modules
 
 # 3. Production image
 FROM base AS runner
@@ -30,7 +31,8 @@ RUN useradd -u 1001 -m appuser \
 
 # standalone already contains the nft-traced node_modules
 COPY --from=builder /app/.next/standalone ./
-COPY --from=server-runtime /app/node_modules ./node_modules
+COPY --from=server-runtime /tmp/server-runtime.tgz /tmp/server-runtime.tgz
+RUN tar -xzf /tmp/server-runtime.tgz -C /app && rm /tmp/server-runtime.tgz
 COPY --from=builder /app/node_modules/next ./node_modules/next
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/.next/static ./.next/static
