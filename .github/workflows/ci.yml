@@ -48,7 +48,7 @@ jobs:
       - name: Security audit
         run: |
           for attempt in 1 2 3; do
-            if output=$(npm audit --audit-level=high 2>&1); then
+            if output=$(npm audit --audit-level=high --fetch-timeout=30000 --fetch-retries=0 2>&1); then
               printf '%s\n' "$output"
               exit 0
             else
