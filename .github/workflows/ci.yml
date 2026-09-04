@@ -46,7 +46,20 @@ jobs:
         run: npm ci
 
       - name: Security audit
-        run: npm audit --audit-level=high
+        run: |
+          for attempt in 1 2 3; do
+            if output=$(npm audit --audit-level=high 2>&1); then
+              printf '%s\n' "$output"
+              exit 0
+            else
+              status=$?
+            fi
+            printf '%s\n' "$output"
+            if ! grep -Eq "audit endpoint returned an error|network timeout" <<<"$output" || [ "$attempt" -eq 3 ]; then
+              exit "$status"
+            fi
+            sleep "$((attempt * 5))"
+          done
 
       - name: Lint and Type-check
         run: npm run check
