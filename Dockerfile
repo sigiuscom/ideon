@@ -12,15 +12,7 @@ ENV LOG_LEVEL=warn
 RUN IS_NEXT_BUILD=1 npm run build
 RUN rm -rf .next/cache
 
-# 2. Install only the packages nft misses
-FROM base AS server-runtime
-RUN apt-get update && apt-get install -y --no-install-recommends python3 build-essential ca-certificates curl && rm -rf /var/lib/apt/lists/*
-COPY package-lock.json ./
-RUN echo '{"name":"runtime","private":true,"dependencies":{"y-leveldb":"*","kysely":"*","nanoid":"*","node-pty":"*"}}' > package.json \
-    && npm install --no-audit --no-fund \
-    && tar -C /app -czf /tmp/server-runtime.tgz package.json package-lock.json node_modules
-
-# 3. Production image
+# 2. Production image
 FROM base AS runner
 ENV NODE_ENV=production
 RUN apt-get update && apt-get install -y --no-install-recommends tini curl && rm -rf /var/lib/apt/lists/*
@@ -31,8 +23,17 @@ RUN useradd -u 1001 -m appuser \
 
 # standalone already contains the nft-traced node_modules
 COPY --from=builder /app/.next/standalone ./
-COPY --from=server-runtime /tmp/server-runtime.tgz /tmp/server-runtime.tgz
-RUN tar -xzf /tmp/server-runtime.tgz -C /app && rm /tmp/server-runtime.tgz
+COPY package-lock.json /tmp/server-runtime/package-lock.json
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends python3 build-essential \
+    && echo '{"name":"runtime","private":true,"dependencies":{"y-leveldb":"*","kysely":"*","nanoid":"*","node-pty":"*"}}' > /tmp/server-runtime/package.json \
+    && cd /tmp/server-runtime \
+    && npm install --no-audit --no-fund \
+    && cp -R node_modules/. /app/node_modules/ \
+    && apt-get purge -y --auto-remove python3 build-essential \
+    && rm -rf /tmp/server-runtime \
+    && rm -rf /root/.npm \
+    && rm -rf /var/lib/apt/lists/*
 COPY --from=builder /app/node_modules/next ./node_modules/next
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/.next/static ./.next/static
