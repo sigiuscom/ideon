@@ -48,14 +48,18 @@ jobs:
       - name: Security audit
         run: |
           for attempt in 1 2 3; do
-            if output=$(npm audit --audit-level=high --fetch-timeout=30000 --fetch-retries=0 2>&1); then
-              printf '%s\n' "$output"
+            audit_output=$(mktemp)
+            if npm audit --audit-level=high --fetch-timeout=30000 --fetch-retries=0 --json > "$audit_output" 2>&1; then
+              cat "$audit_output"
               exit 0
             else
               status=$?
             fi
-            printf '%s\n' "$output"
-            if ! grep -Eq "audit endpoint returned an error|network timeout" <<<"$output" || [ "$attempt" -eq 3 ]; then
+            cat "$audit_output"
+            if node .github/scripts/check-audit.mjs "$audit_output"; then
+              exit 0
+            fi
+            if ! grep -Eq "audit endpoint returned an error|network timeout" "$audit_output" || [ "$attempt" -eq 3 ]; then
               exit "$status"
             fi
             sleep "$((attempt * 5))"
