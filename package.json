@@ -164,7 +164,7 @@
       "js-yaml": "^5.0.0",
       "hono": "^4.13.7",
       "sass": "^1.105.1",
-      "chokidar": "^4.0.3",
+      "chokidar": "^5.0.0",
       "http-cache-semantics": "^4.3.0",
       "piscina": "^4.9.4"
     }
@@ -236,7 +236,7 @@
     "js-yaml": "^5.0.0",
     "hono": "^4.13.7",
     "sass": "^1.105.1",
-    "chokidar": "^4.0.3",
+    "chokidar": "^5.0.0",
     "http-cache-semantics": "^4.3.0",
     "piscina": "^4.9.4",
     "proxy-addr": "^2.0.8",
