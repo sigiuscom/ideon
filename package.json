@@ -112,7 +112,7 @@
       "@radix-ui/react-primitive": "^2.1.4",
       "@radix-ui/react-roving-focus": "^1.1.11",
       "@radix-ui/react-collection": "^1.1.8",
-      "dompurify": "^3.4.12",
+      "dompurify": "^3.4.17",
       "nanoid": "^6.0.0",
       "@react-email/body": "0.3.0",
       "mermaid": "^11.15.0",
@@ -166,7 +166,10 @@
       "sass": "^1.105.1",
       "chokidar": "^5.0.0",
       "http-cache-semantics": "^4.3.0",
-      "piscina": "^5.0.0"
+      "piscina": "^5.0.0",
+      "follow-redirects": "^1.16.1",
+      "markdown-it": "^14.3.3",
+      "vite": "^8.1.6"
     }
   },
   "overrides": {
@@ -178,7 +181,7 @@
     "@radix-ui/react-primitive": "^2.1.4",
     "@radix-ui/react-roving-focus": "^1.1.11",
     "@radix-ui/react-collection": "^1.1.8",
-    "dompurify": "^3.4.12",
+    "dompurify": "^3.4.17",
     "nanoid": "^6.0.0",
     "@react-email/body": "0.3.0",
     "mermaid": "^11.15.0",
@@ -240,7 +243,10 @@
     "http-cache-semantics": "^4.3.0",
     "piscina": "^5.0.0",
     "proxy-addr": "^2.0.8",
-    "source-map-js": "^1.2.2"
+    "source-map-js": "^1.2.2",
+    "follow-redirects": "^1.16.1",
+    "markdown-it": "^14.3.3",
+    "vite": "^8.1.6"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.1",
