@@ -214,7 +214,7 @@
     "@boxyhq/saml20": "2.0.0",
     "@xmldom/xmldom": "0.9.12",
     "cross-spawn": "^7.0.6",
-    "minimatch": "^10.2.1",
+    "minimatch": "^11.0.0",
     "@auth/core": "0.41.3",
     "@opentelemetry/otlp-transformer": "0.223.0",
     "@opentelemetry/core": "2.12.0",
